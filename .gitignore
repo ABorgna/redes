@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+
+# Jupyter
+.ipynb_checkpoints
+
