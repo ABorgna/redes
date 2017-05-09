@@ -12,7 +12,7 @@ WHO_HAS = 1
 
 def nuevo_paquete(fuente, total):
 # el handler de prn solo puede tener un parametro libre (y por lo tanto no
-# deja pasar el diccionario y el total) por hay que anidar:
+# deja pasar el diccionario y el total) por eso hay que anidar:
     def contar_paquete(paquete):
         if paquete[ARP].op == WHO_HAS:
             buscado = paquete[ARP].pdst
