@@ -14,9 +14,10 @@ def distinguir(fuente, total):
 # el handler de prn solo puede tener un parametro libre (y por lo tanto no
 # deja pasar el diccionario y el total) por hay que anidar:
     def nuevo_paquete(paquete):
-        if paquete[ARP].op == WHO_HAS:
-            buscado = paquete[ARP].pdst
-            fuente[buscado] = 1 if buscando not in fuente else fuente[buscado] + 1
+        nonlocal fuente, total
+        if paquete[sc.ARP].op == WHO_HAS:
+            buscado = paquete[sc.ARP].pdst
+            fuente[buscado] = 1 if buscado not in fuente else fuente[buscado] + 1
             total += 1
     print()
     return nuevo_paquete
@@ -40,7 +41,7 @@ if __name__ == '__main__':
             for p in pkts: distinguir(fuente, total)(p)
         else:
             print("Interrumpir con ctrl-C")
-            sc.sniff(prn=distinguir(fuente, total), store=0, filter="arp")
+            sc.sniff(prn=distinguir(fuente, total), count=0, store=0, filter="arp")
 
     except KeyboardInterrupt:
             print("Terminó de sniffear")
