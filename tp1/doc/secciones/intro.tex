@@ -1,32 +1,39 @@
+A modo muy general, con el objetivo de analizar distintas redes locales, vamos a modelar ciertos comportamientos en el tráfico como fuentes de Teoría de la Información y poder extraer conclusiones concretas partiendo de las herramientas conocidas, particularmente los conceptos de entropía de la fuente e información de un símbolo en dicha fuente, para estudiar dichas fuentes.
 \section{Introducción}
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+\subsection{ARP}
+En particular nos interesa analizar las interacciones que se dan entre hosts de la red con el fin resolver direcciones de capa de red hacia capa de enlace, usualmente IP a MAC. Estas interacciones son propias del \emph{ARP (protocolo de resolución de direcciones)} \footnote{https://en.wikipedia.org/wiki/Address_Resolution_Protocol}, el cual cumple un rol crucial en lo que conocemos como \emph{internetworking}.
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Se trata de un protocolo de \emph{request} y \emph{response}, implementados a partir de paquetes \emph{'who-has'}, que preguntan a un dominio de broadcast por la \emph{MAC address} de una IP particular, y paquetes \emph{'is-at'} que responden de manera unicast al emisor del paquete 'who-has'.
 
-\subsection{Lorem ipsum dolor}
+El tipo del paquete se determina por el campo de operación de dicho paquete, del cual haremos amplio uso.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+Por supuesto, dicho protocolo no se ejecuta cada vez que se quiera efectuar una transmisión, sino que los resultados se almacenan temporalmente una \emph{cache} para agilizar tiempos.
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+\subsection{Herramientas y resolución de primer etapa}
+Cada una de las capturas de red que hicimos (una por cada integrante del grupo), se hizo con el programa \emph{TShark}, versión \emph{terminal-based} del packet sniffer \emph{Wireshark}.
 
-\subsection{Duis aute irure dolor}
+Los paquetes obtenidos los manipulamos con el framework \emph{Scapy} de \emph{Python} que nos permite acceder a los campos de cada uno y, por ejemplo, determinar si tiene capa \emph{ARP} y (de ser así) su destino buscado.
 
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+\subsubsection{Primer ejercicio}
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lo primero que se nos pide es modelar cada red como una fuete de información binaria $S$ de memoria nula con símbolos en $\{S_{unicast},\ S_{broadcast}\}$.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Para implementar la fuente simplemente contaremos la cantidad de paquetes $p$ tales que $p.dst =$ 'ff:ff:ff:ff:ff:ff' (i.e la dirección MAC de destino de broadcast). Dicha implementación está en \emph{entro.py} y se encarga de imprimir por pantalla la entropía de la fuente y las ocurrencias de cada símbolo para una secuencia dada de paquetes.
 
-\subsection{Lorem ipsum dolor}
+Por lo tanto dicha fuente se abstrae de la identidad de los nodos de la red y los trata indiscriminadamente como emisores de símbolos según la dirección de capa de enlace de sus paquetes.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+A modo analítico, la fuente $S$ de cada red permite entender de qué manera se comunican los hosts de la red.
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+Por ejemplo, al tratarse de conexiones predominantemente dirigidas, resultaría extraño que los paquetes de broadcast fueran mayoría en el tráfico de la red. Y en caso contrario, la fuente haría visibles escenarios particulares de topologías o comunicaciones entre hosts.
 
-\subsection{Duis aute irure dolor}
+\subsubsection{Segundo ejercicio}
 
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+El segundo ejercicio consistió en modelar una nueva fuente de información $S_1$ de memoria nula, con el objetivo de distinguir, en lugar de tipos de destinos como lo hacía $S$, los propios nodos (hosts) de la red.
 
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Dicha distinción se hizo a partir de los paquetes \emph{ARP}, y la implementación se encuentra en \emph{distinguidos.py}.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lo que hicimos fue considerar como símbolos las \emph{IPs} de request de los mensajes 'who-has'. De esta manera, los símbolos con menos información son aquellos más solicitados.
+
+Entonces los nodos distinguidos, con la finalidad de exponer aquellos más 'importantes' en la red, los consideramos como aquellos símbolos $s$ tales que $I(s) < H(S_1)$ siendo $I(s)$ la información del nodo s en la fuente $S_1$ y $H(S_1)$ la entropía de la fuente.
+
+Siguiendo con esta idea, es de esperarse que los nodos más solicitados, como los \emph{default gateways} aparezcan siempre entre los distinguidos.
