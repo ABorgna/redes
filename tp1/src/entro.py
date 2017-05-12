@@ -47,7 +47,7 @@ def readFromIF(interface=None):
         return
     except OSError as e:
         if str(e).endswith('No such device'):
-            print(f"Error: No such device '{interface}'", file=sys.stderr)
+            print("Error: No such device '{interface}'", file=sys.stderr)
             return
         raise e
 
