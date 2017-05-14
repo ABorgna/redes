@@ -19,7 +19,7 @@ Utilizando las herramientas presentadas en el ejercicio 1 sobre esta red se obtu
 \begin{figure}[h]
    \centering
    \begin{tabular}{@{}c@{\hspace{.5cm}}c@{}}
-       \includegraphics[page=1,width=.45\textwidth]{../img/barras-Empresa} & 
+       \includegraphics[page=1,width=.70\textwidth]{../img/barras-Empresa} & 
        %\includegraphics[page=2,width=.45\textwidth]{somemultipagepdf} \\[.5cm]
        %\includegraphics[page=3,width=.45\textwidth]{somemultipagepdf} \\
    \end{tabular}
@@ -42,7 +42,7 @@ Utilizando las herramientas presentadas en el ejercicio 1 sobre esta red se obtu
 \begin{figure}[h]
    \centering
    \begin{tabular}{@{}c@{\hspace{.5cm}}c@{}}
-       \includegraphics[page=1,width=.45\textwidth]{../img/red-Empresa} & 
+       \includegraphics[page=1,width=.80\textwidth]{../img/red-Empresa} & 
        %\includegraphics[page=2,width=.45\textwidth]{somemultipagepdf} \\[.5cm]
        %\includegraphics[page=3,width=.45\textwidth]{somemultipagepdf} \\
    \end{tabular}
@@ -53,7 +53,9 @@ Utilizando las herramientas presentadas en el ejercicio 1 sobre esta red se obtu
 % \textbf{GRAFICO!!}
 
  En la figura anterior se puede observar que el nodo 192.168.1.1 se comporta como un nodo raiz al cual se conectan varios dispositivos, este comportamiento es esperado debido a que se trata de una red Wi-Fi en el cual el nodo 192.168.1.1 podr\'ia el Router. \par 
- A su vez, se puede observar que las direcciones asignadas son de la forma 192.168.1.0 con una m\'ascara $/24$ ya que ninguno de los \emph{hosts} tiene asignado direcciones superiores a $254$.
+ A su vez, se puede observar que las direcciones asignadas son de la forma 192.168.1.0 con una m\'ascara $/25$ ya que ninguno de los \emph{hosts} tiene asignado direcciones superiores a $126$.\par 
+Tambi\'en se puede observar un pedido de asignaci\'on de IP por parte del host 192.168.1.55 hacia el servidor DHCP (169.254.255.255).\par
+Por \'ultimo podemos observar paquetes en las cuales la direcci\'on de destino coincide con la direcci\'on del emisor, esto se debe a que son \emph{gratuitous ARP packets} los cuales suponemos son utilizados para anunciar a la red de la presencia de un nuevo dispositivo o para actualizar las tablas de ARP luego de que una MAC address cambia de IP.
 
 
  \subsubsection{Informacion y nodos distingidos}
@@ -63,7 +65,7 @@ Utilizando las herramientas presentadas en el ejercicio 1 sobre esta red se obtu
 \begin{figure}[H]
    \centering
    \begin{tabular}{@{}c@{\hspace{.5cm}}c@{}}
-       \includegraphics[page=1,width=.45\textwidth]{../img/distinguidos-Empresa} & 
+       \includegraphics[page=1,width=.70\textwidth]{../img/distinguidos-Empresa} & 
        %\includegraphics[page=2,width=.45\textwidth]{somemultipagepdf} \\[.5cm]
        %\includegraphics[page=3,width=.45\textwidth]{somemultipagepdf} \\
    \end{tabular}
