@@ -32,3 +32,11 @@
 .ipynb_checkpoints
 __pycache__
 
+# latex
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.toc
+
