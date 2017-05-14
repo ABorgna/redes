@@ -30,7 +30,7 @@ Con el fin de analizar de mejor manera la topología de la red también armamos 
 	\includegraphics[width=15cm, height=8.7cm]{../img/red-Tatooine-Lan.pdf}
 \end{figure}
 
-Se puede notar que ninguno de los otros dispositivos mecionados, al margen de aquel para el cual flusheamos la caché ARP, hizo un request de tipo \emph{'who-has'} durante el sniff usando su IP pública. Dicho comportamiento se repite en las otras redes aledañas en las cuales un único nodo envía un paquete \emph{'who-has'} a una IP con el último octeto en 1 (candidatos a routers).
+Se puede notar que ninguno de los otros dispositivos mencionados, al margen de aquel para el cual flusheamos la caché ARP, hizo un request de tipo \emph{'who-has'} durante el sniff usando su IP pública. Dicho comportamiento se repite en las otras redes aledañas en las cuales un único nodo envía un paquete \emph{'who-has'} a una IP con el último octeto en 1 (candidatos a routers).
 \\
 
 Pero, por otro lado, se puede ver buena actividad en una red que parece corresponderse con el rango 192.168.0.0/16 reservado para IPs privadas. Como la capa de enlace se encarga de que las redes privadas no se solapen, podemos afirmar que se trata de la red a la que nos conectamos durante la medición.
