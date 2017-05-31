@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import scapy.all as sc
 import sys
 from time import time

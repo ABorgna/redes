@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import scapy.all as sc
 import sys
 import math as m
