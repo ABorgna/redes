@@ -13,7 +13,7 @@ UNANSWERED=1
 def armar_rutas(dst, iteraciones):
     times = {}
 
-    for ttl_actual in range(0, MAX_TTL+1):
+    for ttl_actual in range(1, MAX_TTL+1):
         times[ttl_actual] = []
         replied = False
 
@@ -21,11 +21,11 @@ def armar_rutas(dst, iteraciones):
             packet = sc.IP(dst=dst,ttl=ttl_actual)/sc.ICMP()
             initial_t = time()
             ans,unans = sc.sr(packet,timeout=TIMEOUT)
-            final_t = time() - initial_t
+            final_t = (time() - initial_t)*1000
 
             if ans:
                 s, r = ans[0]
-                
+
                 if r.haslayer(sc.ICMP) and r.payload.type in [11, 0]: # time-exceeded o reply
                     ip = r.src
                     #print(ip)

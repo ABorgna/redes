@@ -39,7 +39,7 @@ def sacar_outliers(ruta):
     rtt_sd = m.sqrt( sum( [(pair[1]-rtt_media)**2 for pair in ruta]) / n)
 
     for ip, rtt in ruta:
-        if abs(rtt - rtt_media)/rtt_sd < tau(n):
+        if abs(rtt - rtt_media)/rtt_sd > tau(n):
             outliers.append(ip)
     return outliers
 
