@@ -13,7 +13,7 @@ UNANSWERED=1
 def armar_rutas(dst, iteraciones):
     times = {}
 
-    for ttl_actual in range(1, MAX_TTL+1):
+    for ttl_actual in range(0, MAX_TTL+1):
         times[ttl_actual] = []
 
         for i in range(iteraciones):
@@ -38,7 +38,7 @@ def armar_rutas(dst, iteraciones):
 
 
 if __name__ == '__main__':
-    dst = sys.argv[1] if len(sys.argv) > 1 else "www.google.com"
+    dst = sys.argv[1] if len(sys.argv) > 1 else "www.uwa.edu.au"
     iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
     times = armar_rutas(dst, iters)
 
