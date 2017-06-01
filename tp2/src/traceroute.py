@@ -15,6 +15,7 @@ def armar_rutas(dst, iteraciones):
 
     for ttl_actual in range(0, MAX_TTL+1):
         times[ttl_actual] = []
+        replied = False
 
         for i in range(iteraciones):
             packet = sc.IP(dst=dst,ttl=ttl_actual)/sc.ICMP()
@@ -24,7 +25,7 @@ def armar_rutas(dst, iteraciones):
 
             if ans:
                 s, r = ans[0]
-
+                
                 if r.haslayer(sc.ICMP) and r.payload.type in [11, 0]: # time-exceeded o reply
                     ip = r.src
                     #print(ip)
@@ -32,7 +33,10 @@ def armar_rutas(dst, iteraciones):
                     times[ttl_actual].append((ip, final_t))
 
                     if r.payload.type == 0: # ya llegó a destino
-                        break
+                        replied = True
+        if replied:
+            break
+
     return times
 
 
