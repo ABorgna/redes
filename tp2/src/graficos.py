@@ -18,7 +18,7 @@ if __name__ == '__main__':
     ruta = ruta_promedio(rtts)
     print("RUTA : {}".format(ruta))
 
-    '''# imprimir rtts de ruta
+    # imprimir rtts de ruta
     df = pd.DataFrame(ruta, columns=['IP', 'RTT'])
     ax = sns.factorplot(x='IP', y='RTT', data=df, aspect=1.5)
     ax.set(xlabel='IPs con más apariciones por salto', ylabel='RTT medio')
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     plt.show()
     if target:
-        ax.savefig("../img/" + target + "-incrementales.pdf") '''
+        ax.savefig("../img/" + target + "-incrementales.pdf")
 
     # imprimir distribución ZRTT
     rtt_media = rtt_promedio(ruta)
@@ -59,10 +59,12 @@ if __name__ == '__main__':
     df = pd.DataFrame(tuplas_zrtt, columns=['IP', 'ZRTT'])
     ax = sns.barplot(x="ZRTT", y="IP", data=df, palette="Blues_d")
     ax.set(ylabel='IPs con más apariciones por salto', xlabel='ZRRTi')
-    plt.show()
-    fig = ax.get_figure()
+    tau = ax.axvline(tau(n))
+    one = ax.axvline(1, color='#B0E2FF')
 
+    fig = ax.get_figure()
     fig.tight_layout()
+    plt.show()
 
     if target:
         fig.savefig("../img/" + target + "-zrtt.pdf")
