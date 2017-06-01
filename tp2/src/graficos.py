@@ -1,6 +1,7 @@
 from traceroute import armar_rutas
-from intercon import ruta_promedio
+from intercon import ruta_promedio, rtt_promedio, tau
 import sys
+import math as m
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     ruta = ruta_promedio(rtts)
     print("RUTA : {}".format(ruta))
 
-    # imprimir rtts de ruta
+    '''# imprimir rtts de ruta
     df = pd.DataFrame(ruta, columns=['IP', 'RTT'])
     ax = sns.factorplot(x='IP', y='RTT', data=df, aspect=1.5)
     ax.set(xlabel='IPs con más apariciones por salto', ylabel='RTT medio')
@@ -43,6 +44,25 @@ if __name__ == '__main__':
 
     plt.show()
     if target:
-        ax.savefig("../img/" + target + "-incrementales.pdf")
+        ax.savefig("../img/" + target + "-incrementales.pdf") '''
 
-    # TODO: imprimir distribución ZRTT
+    # imprimir distribución ZRTT
+    rtt_media = rtt_promedio(ruta)
+    n = len(ruta)
+    rtt_sd = m.sqrt( sum( [(pair[1]-rtt_media)**2 for pair in ruta]) / n)
+
+    tuplas_zrtt = []
+    for ip, rtt in ruta:
+        zrtt = abs(rtt - rtt_media)/rtt_sd
+        tuplas_zrtt.append((ip, zrtt))
+
+    df = pd.DataFrame(tuplas_zrtt, columns=['IP', 'ZRTT'])
+    ax = sns.barplot(x="ZRTT", y="IP", data=df, palette="Blues_d")
+    ax.set(ylabel='IPs con más apariciones por salto', xlabel='ZRRTi')
+    plt.show()
+    fig = ax.get_figure()
+
+    fig.tight_layout()
+
+    if target:
+        fig.savefig("../img/" + target + "-zrtt.pdf")
