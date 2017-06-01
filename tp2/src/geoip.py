@@ -8,7 +8,6 @@ import urllib
 
 import traceroute
 
-GEOIP_ENDPOINT = "http://freegeoip.net/json/"
 STATICMAPS_ENDPOIND = "https://maps.googleapis.com/maps/api/staticmap"
 
 # At least it's not plain text
@@ -16,25 +15,112 @@ MAPS_ENC_KEY = b'QUl6YVN5QkFoX0pLWmtRNGVjN0trdlJoM1A2UzMzWFdZN29xeXZV'
 MAPS_KEY = base64.b64decode(MAPS_ENC_KEY).decode('utf-8')
 
 class Geoip:
-    def info(ip):
-        ''' Devuelve un diccionario con
-            ip, country_code, country_name, region_code, city,
-            zip_code, time_zone, latitude, longitude, metro_code
-        '''
-        url = GEOIP_ENDPOINT + str(ip)
-        r = requests.get(url)
 
-        if r.status_code != 200:
-            print(r.text, file=sys.stderr)
-            raise IOError("Hubo un problema con la conexion a freegeoip")
-
-        return r.json()
+    FREEGEOIP_ENDPOINT = "http://freegeoip.net/json/"
+    NEKUDO_ENDPOINT = "http://geoip.nekudo.com/api/"
 
     def coords(ip):
         info = Geoip.info(ip)
         return (info["latitude"], info["longitude"])
 
+    def info(ip):
+        ''' Devuelve un diccionario con
+            ip, country, city, latitude, longitude
+        '''
+        providers = [Geoip._get_nekudo, Geoip._get_freegeoip]
+
+        res = None
+        for f in providers:
+            res = f(ip)
+            if res is not None:
+                break
+
+        if res is None:
+            raise IOError("No se pudo geolocalizar la ip", ip)
+
+        return res
+
+    def _get_freegeoip(ip):
+        url = Geoip.FREEGEOIP_ENDPOINT + str(ip)
+        r = requests.get(url)
+
+        if r.status_code != 200:
+            return None
+        j = r.json()
+
+        return {
+            "ip": j["ip"],
+            "country": j["country_name"],
+            "city": j["city"],
+            "latitude": j["latitude"],
+            "longitude": j["longitude"],
+        }
+
+    def _get_nekudo(ip):
+        url = Geoip.NEKUDO_ENDPOINT + str(ip)
+        r = requests.get(url)
+
+        if r.status_code != 200:
+            return None
+
+        j = r.json()
+        if "type" in j and j["type"] == "error":
+            return None
+
+        return {
+            "ip": j["ip"],
+            "country": j["country"]["name"],
+            "city": j["city"],
+            "latitude": j["location"]["latitude"],
+            "longitude": j["location"]["longitude"],
+        }
+
 class Mapper:
+
+    STYLE_SIMPLE = [
+            ("style", "element:labels|visibility:off"),
+            ("style", "feature:administrative.land_parcel|visibility:off"),
+            ("style", "feature:administrative.neighborhood|visibility:off"),
+            ("style", "feature:poi.business|visibility:off"),
+            ("style", "feature:road|visibility:off"),
+            ("style", "feature:road|element:labels.icon|visibility:off"),
+            ("style", "feature:transit|visibility:off"),
+    ]
+
+    STYLE_WHITE = [
+            ("style", "element:geometry|color:0xf5f5f5"),
+            ("style", "element:labels|visibility:off"),
+            ("style", "element:labels.icon|visibility:off"),
+            ("style", "element:labels.text.fill|color:0x616161"),
+            ("style", "element:labels.text.stroke|color:0xf5f5f5"),
+            ("style", "feature:administrative.country|element:geometry.stroke|color:0xffffff|visibility:on"),
+            ("style", "feature:administrative.land_parcel|visibility:off"),
+            ("style", "feature:administrative.land_parcel|element:labels.text.fill|color:0xbdbdbd"),
+            ("style", "feature:administrative.neighborhood|visibility:off"),
+            ("style", "feature:administrative.province|visibility:off"),
+            ("style", "feature:landscape.man_made|visibility:off"),
+            ("style", "feature:landscape.natural|element:geometry.fill|color:0xc9c9c9"),
+            ("style", "feature:landscape.natural.landcover|element:geometry.fill|color:0xc9c9c9"),
+            ("style", "feature:landscape.natural.terrain|element:geometry.fill|color:0xd1d1d1"),
+            ("style", "feature:poi|element:geometry|color:0xeeeeee"),
+            ("style", "feature:poi|element:labels.text.fill|color:0x757575"),
+            ("style", "feature:poi.business|visibility:off"),
+            ("style", "feature:poi.park|element:geometry|color:0xe5e5e5"),
+            ("style", "feature:poi.park|element:labels.text|visibility:off"),
+            ("style", "feature:poi.park|element:labels.text.fill|color:0x9e9e9e"),
+            ("style", "feature:road|visibility:off"),
+            ("style", "feature:road|element:geometry|color:0xffffff"),
+            ("style", "feature:road.arterial|element:labels.text.fill|color:0x757575"),
+            ("style", "feature:road.highway|element:geometry|color:0xdadada"),
+            ("style", "feature:road.highway|element:labels.text.fill|color:0x616161"),
+            ("style", "feature:road.local|element:labels.text.fill|color:0x9e9e9e"),
+            ("style", "feature:transit.line|element:geometry|color:0xe5e5e5"),
+            ("style", "feature:transit.station|element:geometry|color:0xeeeeee"),
+            ("style", "feature:water|element:geometry|color:0xc9c9c9"),
+            ("style", "feature:water|element:geometry.fill|color:0xffffff"),
+            ("style", "feature:water|element:labels.text.fill|color:0x9e9e9e"),
+    ]
+
     def generate_route_map(imgfile, ips, times=None):
         # Checks
         if times is not None and len(ips) != len(times):
@@ -51,15 +137,7 @@ class Mapper:
                 ("key", MAPS_KEY),
                 #("zoom", 1), # World level
                 ("size", "640x640"), # Max
-                # Style params
-                ("style", "element:labels|visibility:off"),
-                ("style", "feature:administrative.land_parcel|visibility:off"),
-                ("style", "feature:administrative.neighborhood|visibility:off"),
-                ("style", "feature:poi.business|visibility:off"),
-                ("style", "feature:road|visibility:off"),
-                ("style", "feature:road|element:labels.icon|visibility:off"),
-                ("style", "feature:transit|visibility:off"),
-        ] + path_query
+        ] + Mapper.STYLE_WHITE + path_query
 
         querystring = urllib.parse.urlencode(query)
         url = STATICMAPS_ENDPOIND + "?" + querystring
