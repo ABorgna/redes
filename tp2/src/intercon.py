@@ -25,7 +25,7 @@ def ip_maximas_apariciones(tanda, ruta):
 
 def ruta_promedio(times):
     ruta = []
-    for ttl, tanda in times.items():
+    for ttl, tanda in times:
         proxima_ip = ip_maximas_apariciones(tanda, ruta)
         if tanda and proxima_ip:
             ruta.append((proxima_ip, rtt_promedio(tanda)))
