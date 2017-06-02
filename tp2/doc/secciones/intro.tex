@@ -1,0 +1,31 @@
+El objetivo de este TP se centra en implementar y usar distintas técnicas y herramientas de diagnóstico a nivel capa de red, en particular las rutas de red que siguen determinados paquetes y los delays respectivos a cada nodo. Esto significa comprender los protocolos necesarios, implementar dichas técnicas, experimentar con ellas y por último estudiar los resultados en un marco analítico que nos permita extraer conclusiones de interés. 
+
+\section{Introducción}
+\subsection{ICMP Traceroute}
+
+Particularmente, estaremos haciendo uso de interacciones de control (es decir, no se intercambian datos)  entre dispositivos de la red que nos permitirán armar una ruta especulativa desde un host a otro. Dichas interacciones pertenecen al \emph{Internet Control Message Protocol (ICMP)}.
+
+El header de dicho protocolo contiene un \emph{tipo} y un \emph{subtipo}. De dichos tipos nos interesan puntualmente 3 tipos de mensaje. Uno de ellos de \emph{request} conocido como \emph{'Echo request'} (tipo \textbf{8}) que se encarga de enviar a un destino en particular un pedido de \emph{'ping'}, es decir que el destinatario rebote el mensaje al remitente.
+
+Luego nos interesan dos tipos de mensaje de \emph{response}, la primera es el \emph{'Echo reply'} que emite el destinatario del \emph{'Echo request'} si el paquete llegó en estado pertinente, y la segunda un \emph{'Time exceeded'} que sucede cuando el \emph{TTL (time to live)} del paquete IP emitido llegó a 0 camino al destinatario (el paquete lo envía cualquier nodo intermedio, en caso de que esté configurado para responder antes dichos escenarios).
+
+Este último tipo de mensajes nos permitirá, a partir de iteraciones incrementales sobre el \emph{TTL} en paquetes del tipo \emph{'Echo request'}, armar una lista de IPs de destinos intermedios que respondieron \emph{Time exceeded} antes de obtener un \emph{'Echo reply'}. Este tipo de herramienta se conoce como un \emph{\textbf{traceroute}} \footnote{ https://en.wikipedia.org/wiki/Traceroute}, aunque no necesariamente siempre se implementa mediante \emph{ICMP} sino que existen variaciones sobre \emph{TCP SYN}, \emph{UDP} y, sin necesidad de usar \emph{TTLs}, existe una opción sobre IP establecida por \emph{RFC 1393} que permite enviar la mitad de paquetes necesarios para una implementación basada en \emph{TTLs}. 
+
+Los paquetes generados y recibidos los manipulamos con el framework \emph{Scapy} de \emph{Python} que nos permite acceder a los campos de cada uno y, por ejemplo, determinar su tipo, \emph{source}, además de poder determinar si hubo o no respuestas por parte del host intermedio.
+
+\subsection{Métodos}
+\subsubsection{Primer ejercicio}
+
+Lo primero que necesitamos implementar es el \emph{traceroute} mencionado. Como dijimos antes, se trata de enviar a lo sumo 30 \footnote{Por default, se usa como máxima cantidad de saltos para una \emph{traceroute} 30, si bien el diámetro de Internet es mucho mayor.} tandas (hasta que en alguna se reciba un \emph{'echo-reply'}) de $n$ iteraciones (usualmente con $n = 30$), donde para cada tanda se envían paquetes al destino seleccionado con un \emph{TTL} fijo y se va incrementando entre tandas.
+
+Entre envío y respuesta de los paquetes se mide el \emph{RTT} a cada salto para cada iteración con la directiva \emph{time()} de la librería homónima de \emph{Python} \footnote{https://docs.python.org/3/library/time.html\#time.time} (multiplicando por 1000 para medir de a milisegundos).
+
+Para la ruta 'general' tomamos, por cada salto la IP con más apariciones de la tanda y el RTT promediado de la misma.
+
+\subsubsection{Segundo ejercicio}
+
+El segundo ejercicio consiste en implementar, sobre la base de la herramienta anterior, una nueva que permita encontrar saltos intercontinentales en la ruta trazada.
+
+Esto se implementa buscando outliers con el método de Cimbala \footnote{http://www.mne.psu.edu/cimbala/me345/Lectures/Outliers.pdf} sobre los \emph{RTTs}. La idea es, sobre la distribución $Z$ del muestreo \footnote {https://en.wikipedia.org/wiki/Standard_score} comparar las mediciones normalizadas $ZRTT_i$ contra valores de la tabla $\tau$ de Thompson para un $\alpha$ dado. Si el valor $ZRTT_i$ es menor que el valor de la tabla $\tau$, entonces se lo asume un \emph{outlier}.
+
+Intuitivamente, los saltos intercontinentales son candidatos a \emph{outlier} dado que se trata de canales con mucho delay.
