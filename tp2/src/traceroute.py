@@ -1,8 +1,12 @@
 #!/usr/bin/python3
 
 # parámetros: <destino> <iteraciones>
-
+import logging
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import scapy.all as sc
+
+from numpy import mean, std, warnings
+from scipy.stats import mode
 import sys
 from time import time
 
@@ -46,8 +50,23 @@ if __name__ == '__main__':
     iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
     times = armar_rutas(dst, iters)
 
+    print("ttl: ip                    min       avg       max      mdev  relativo")
+    last_t = 0
     for ttl, tanda in times:
         if tanda:
-            print(" TTL: {} ----------".format(ttl))
-            for ip, tiempo in tanda:
-                print(" IP: {}\n Tiempo medido: {}".format(ip, tiempo))
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                ip = mode([ip for ip, t in tanda]).mode[0]
+            ts = [t for ip_tanda, t in tanda if ip_tanda == ip]
+            ts.sort()
+            if len(ts) > 1:
+                print("{:3}: {:15} {:7.2f}ms {:7.2f}ms {:7.2f}ms {:7.2f}ms {:7.2f}ms".format(
+                    ttl, ip, min(ts), mean(ts), max(ts), std(ts), mean(ts)-last_t))
+            else:
+                # No variance
+                print("{:3}: {:15} {:7.2f}ms {:7.2f}ms {:7.2f}ms         * {:7.2f}ms".format(
+                    ttl, ip, ts[0], ts[0], ts[0], mean(ts)-last_t))
+            last_t = mean(ts)
+        else:
+            print("{:3}: *                       *         *         *         *         *".format(ttl, ip))
+
