@@ -8,6 +8,7 @@ logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import scapy.all as sc
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 from numpy import mean, std, warnings
 from scipy.stats import mode
 import sys
@@ -19,29 +20,74 @@ MAX_TTL=30
 
 def armar_rutas(dst, iteraciones):
     for ttl_actual in range(1, MAX_TTL+1):
-        ttl_times = []
-        replied = False
 
-        packet = sc.IP(dst=dst,ttl=ttl_actual)/sc.ICMP()
-
-        for i in range(iteraciones):
-            ans,unans = sc.sr(packet, timeout=TIMEOUT, verbose=False)
-
-            if ans:
-                s, r = ans[0]
-                final_t = (r.time - s.sent_time)*1000
-
-                if r.haslayer(sc.ICMP) and r.payload.type in [11, 0]: # time-exceeded o reply
-                    ip = r.src
-                    ttl_times.append((ip, final_t))
-
-                    if r.payload.type == 0: # ya llegó a destino
-                        replied = True
-
+        ttl_times, replied = _send_parallel(dst, ttl_actual, iteraciones)
         yield ttl_actual, ttl_times
 
         if replied:
             break
+
+def _send_serial(dst, ttl, count):
+    ''' Manda [count] request y mide los tiempos de respuesta y la ip
+    '''
+    replied = False
+    ip_times = []
+
+    packet = sc.IP(dst=dst,ttl=ttl)/sc.ICMP()
+
+    for i in range(count):
+        ans,unans = sc.sr(packet, timeout=TIMEOUT, verbose=False)
+        if ans:
+            s, r = ans[0]
+            final_t = (r.time - s.sent_time) * 1000
+
+            if r.haslayer(sc.ICMP) and r.payload.type in [11, 0]: # time-exceeded o reply
+                ip = r.src
+                if r.payload.type == 0: # ya llegó a destino
+                    replied = True
+
+                ip_times.append((ip, final_t))
+
+    return ip_times, replied
+
+
+def _send_parallel(dst, ttl, count):
+    ''' Manda [count] request en paralelo y mide los tiempos de respuesta y la ip
+
+        Necesitamos usar UDP para distingir cual es nuestro mensaje segun el puerto
+        Traceroute usa el rango de puertos de destino 33434-33534, así que lo copiamos
+
+        Si no nos responden al UDP hacemos fallback al metodo serie con ICMP
+    '''
+    replied = False
+    ip_times = []
+
+    def worker(id):
+        packet = sc.IP(dst=dst,ttl=ttl, id=id)/sc.UDP(dport=33434+id)
+        ans,unans = sc.sr(packet, timeout=TIMEOUT, verbose=False)
+        if ans:
+            s, r = ans[0]
+            final_t = (r.time - s.sent_time) * 1000
+
+            if r.haslayer(sc.ICMP) and r.payload.type in [11, 0]: # time-exceeded o reply
+                ip = r.src
+                replied = r.payload.type == 0 # ya llegó a destino
+
+                return (ip, final_t), replied
+
+        return None, None
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        for ip_time, rep in executor.map(worker, range(count)):
+            if ip_time is not None:
+                ip_times.append(ip_time)
+                replied |= rep
+
+    # fallback
+    if not ip_times:
+        return _send_serial(dst, ttl, count)
+
+    return ip_times, replied
 
 def print_summary(times):
     print("ttl: ip                    min       avg       max      mdev  relativo")
