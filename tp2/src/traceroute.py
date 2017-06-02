@@ -13,11 +13,10 @@ from time import time
 TIMEOUT = 1
 MAX_TTL=30
 
-RESULTS=0
-UNANSWERED=1
 
+def armar_rutas(dst, iteraciones, ans_unans):
+    ans_unans[0], ans_unans[1] = 0, 0 # [answered, unanswered]
 
-def armar_rutas(dst, iteraciones):
     for ttl_actual in range(1, MAX_TTL+1):
         ttl_times = []
         replied = False
@@ -29,6 +28,7 @@ def armar_rutas(dst, iteraciones):
             final_t = (time() - initial_t)*1000
 
             if ans:
+                ans_unans[0] +=  1
                 s, r = ans[0]
 
                 if r.haslayer(sc.ICMP) and r.payload.type in [11, 0]: # time-exceeded o reply
@@ -40,6 +40,9 @@ def armar_rutas(dst, iteraciones):
                     if r.payload.type == 0: # ya llegó a destino
                         replied = True
 
+            if unans:
+                ans_unans[1] += 1
+
         yield ttl_actual, ttl_times
 
         if replied:
@@ -48,7 +51,8 @@ def armar_rutas(dst, iteraciones):
 if __name__ == '__main__':
     dst = sys.argv[1] if len(sys.argv) > 1 else "www.msu.ru"
     iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
-    times = armar_rutas(dst, iters)
+    ans_unans = []
+    times = armar_rutas(dst, iters, ans_unans)
 
     print("ttl: ip                    min       avg       max      mdev  relativo")
     last_t = 0
@@ -69,4 +73,3 @@ if __name__ == '__main__':
             last_t = mean(ts)
         else:
             print("{:3}: *                       *         *         *         *         *".format(ttl, ip))
-

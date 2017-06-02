@@ -1,5 +1,6 @@
 from traceroute import armar_rutas
 from intercon import ruta_promedio, rtt_promedio, tau
+from geoip import Mapper
 import sys
 import math as m
 
@@ -14,7 +15,7 @@ if __name__ == '__main__':
     iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
     target = sys.argv[3] if len(sys.argv) > 3 else ""
 
-    rtts = armar_rutas(dst, iters)
+    rtts = armar_rutas(dst, iters, [0,0])
     ruta = ruta_promedio(rtts)
     print("RUTA : {}".format(ruta))
 
@@ -68,3 +69,8 @@ if __name__ == '__main__':
 
     if target:
         fig.savefig("../img/" + target + "-zrtt.pdf")
+
+    # mapa
+    ips = [ip for ip, rtt in ruta]
+    tiempos = [rtt for ip, rtt in ruta]
+    Mapper.generate_route_map("../img/" + target + "-map", ips, tiempos)
