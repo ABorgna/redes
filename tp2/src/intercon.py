@@ -9,9 +9,8 @@ from scipy import stats
 from time import time
 from traceroute import armar_rutas
 
+from numpy import mean, std
 
-def rtt_promedio(tanda):
-    return sum([pair[1] for pair in tanda]) / len(tanda )
 
 def ip_maximas_apariciones(tanda, ruta):
     # esto por el caso muy droga en que se agreguen nodos entre mediciones
@@ -27,8 +26,9 @@ def ruta_promedio(times):
     ruta = []
     for ttl, tanda in times:
         proxima_ip = ip_maximas_apariciones(tanda, ruta)
-        if tanda and proxima_ip:
-            ruta.append((proxima_ip, rtt_promedio(tanda)))
+        chose_ones = [rtt for ip, rtt in tanda if ip == proxima_ip]
+        if tanda and proxima_ip and chose_ones:
+            ruta.append((proxima_ip, mean(chose_ones)))
     return ruta
 
 def tau(n):
@@ -37,9 +37,10 @@ def tau(n):
 
 def sacar_outliers(ruta):
     outliers = []
-    rtt_media = rtt_promedio(ruta)
+    rtts = [rtt for ip, rtt in ruta]
+    rtt_media = mean(rtts)
+    rtt_sd = std(rtts)
     n = len(ruta)
-    rtt_sd = m.sqrt( sum( [(pair[1]-rtt_media)**2 for pair in ruta]) / n)
 
     for ip, rtt in ruta:
         if abs(rtt - rtt_media)/rtt_sd > tau(n):

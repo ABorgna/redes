@@ -1,8 +1,10 @@
 from traceroute import armar_rutas
-from intercon import ruta_promedio, rtt_promedio, tau
+from intercon import ruta_promedio, tau
 from geoip import Mapper
 import sys
 import math as m
+
+from numpy import mean, std
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -48,9 +50,10 @@ if __name__ == '__main__':
         ax.savefig("../img/" + target + "-incrementales.pdf")
 
     # imprimir distribución ZRTT
-    rtt_media = rtt_promedio(ruta)
+    rtts = [rtt for ip, rtt in ruta]
+    rtt_media = mean(rtts)
+    rtt_sd = std(rtts)
     n = len(ruta)
-    rtt_sd = m.sqrt( sum( [(pair[1]-rtt_media)**2 for pair in ruta]) / n)
 
     tuplas_zrtt = []
     for ip, rtt in ruta:
