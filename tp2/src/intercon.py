@@ -26,9 +26,9 @@ def ruta_promedio(times):
     ruta = []
     for ttl, tanda in times:
         proxima_ip = ip_maximas_apariciones(tanda, ruta)
-        chose_ones = [rtt for ip, rtt in tanda if ip == proxima_ip]
-        if tanda and proxima_ip and chose_ones:
-            ruta.append((proxima_ip, mean(chose_ones)))
+        chosen_ones = [rtt for ip, rtt in tanda if ip == proxima_ip]
+        if tanda and proxima_ip and chosen_ones:
+            ruta.append((proxima_ip, mean(chosen_ones)))
     return ruta
 
 def tau(n):

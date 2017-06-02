@@ -25,7 +25,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(ruta, columns=['IP', 'RTT'])
     ax = sns.factorplot(x='IP', y='RTT', data=df, aspect=1.5)
     ax.set(xlabel='IPs con más apariciones por salto', ylabel='RTT medio')
-    ax.set_xticklabels(rotation=40)
+    ax.set_xticklabels(rotation=90)
     ax.fig.suptitle('RTT medio para cada salto')
 
     plt.show()
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(ruta_incremental, columns=['IP', 'RTT incremental'])
     ax = sns.factorplot(x='IP', y='RTT incremental', data=df, aspect=1.5)
     ax.set(xlabel='IPs con más apariciones por salto', ylabel='Suma de RTTs')
-    ax.set_xticklabels(rotation=40)
+    ax.set_xticklabels(rotation=90)
     ax.fig.suptitle('RTT incremental medio tras cada salto')
 
     plt.show()
@@ -76,4 +76,6 @@ if __name__ == '__main__':
     # mapa
     ips = [ip for ip, rtt in ruta]
     tiempos = [rtt for ip, rtt in ruta]
+
+    print("IPS : {}".format(ips))
     Mapper.generate_route_map("../img/" + target + "-map", ips, tiempos)
