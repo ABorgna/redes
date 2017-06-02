@@ -250,7 +250,7 @@ if __name__ == "__main__":
         imgfile = sys.argv[2]
 
         # 1 iteracion para que no tarde años
-        times = traceroute.armar_rutas(target, 1)
+        times = traceroute.armar_rutas(target, 3)
         ips = []
         tiempos = []
         for ttl, tanda in times:
@@ -258,6 +258,6 @@ if __name__ == "__main__":
                 ip, tiempo = tanda[0]
                 ips.append(ip)
                 tiempos.append(tiempo)
-                print(ip + ":", str(tiempo) + "ms")
+                print("{:15}: {:7.2f}ms".format(ip,tiempo))
 
         Mapper.generate_route_map(imgfile, ips, tiempos)

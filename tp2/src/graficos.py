@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from traceroute import armar_rutas
 from intercon import ruta_promedio, tau
 from geoip import Mapper
@@ -6,6 +8,7 @@ import math as m
 
 from numpy import mean, std
 
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -13,9 +16,20 @@ import seaborn as sns
 # parámetros: <destino> <iteraciones> <nombre para los pdfs>
 
 if __name__ == '__main__':
-    dst = sys.argv[1] if len(sys.argv) > 1 else "mu.ac.in"
-    iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
-    target = sys.argv[3] if len(sys.argv) > 3 else ""
+    parser = argparse.ArgumentParser(description="Generar graficos")
+
+    parser.add_argument("host", default="mu.ac.in", nargs="?",
+            help="(default: www.msu.ru)")
+    parser.add_argument("iteraciones", default=3, nargs="?", type=int,
+            help="(default: 3)")
+    parser.add_argument("output_name", default=None, nargs="?",
+            help="(default: hostname)")
+
+    args = parser.parse_args()
+
+    dst = args.host
+    iters = args.iteraciones
+    target = args.output_name
 
     rtts = armar_rutas(dst, iters)
     ruta = ruta_promedio(rtts)
@@ -80,4 +94,5 @@ if __name__ == '__main__':
     tiempos = [rtt for ip, rtt in ruta]
 
     print("IPS : {}".format(ips))
-    Mapper.generate_route_map("../img/" + target + "-map", ips, tiempos)
+    if target:
+        Mapper.generate_route_map("../img/" + target + "-map", ips, tiempos)
