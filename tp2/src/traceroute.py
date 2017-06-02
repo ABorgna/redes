@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 
 # parámetros: <destino> <iteraciones>
+
+# Filtra el warning por IPv6 de scapy
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import scapy.all as sc
 
+import argparse
 from numpy import mean, std, warnings
 from scipy.stats import mode
 import sys
@@ -48,13 +51,8 @@ def armar_rutas(dst, iteraciones, ans_unans):
         if replied:
             break
 
-if __name__ == '__main__':
-    dst = sys.argv[1] if len(sys.argv) > 1 else "www.msu.ru"
-    iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
-    ans_unans = []
-    times = armar_rutas(dst, iters, ans_unans)
-
-    print("ttl: ip                    min       avg       max      mdev  relativo")
+def print_summary(times, ans_unans):
+    print("ttl: ip                    min       avg       max      mdev  relativo ans/unans")
     last_t = 0
     for ttl, tanda in times:
         if tanda:
@@ -73,3 +71,30 @@ if __name__ == '__main__':
             last_t = mean(ts)
         else:
             print("{:3}: *                       *         *         *         *         *".format(ttl, ip))
+
+def print_detailed(times, ans_unans):
+    for ttl, tanda in times:
+        if tanda:
+            print(" TTL: {} ----------".format(ttl))
+            for ip, tiempo in tanda:
+                print(" IP: {}\n Tiempo medido: {}".format(ip, tiempo))
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Correr un traceroute")
+
+    parser.add_argument("host", default="www.msu.ru", nargs="?",
+            help="(default: www.msu.ru)")
+    parser.add_argument("iteraciones", default=3, nargs="?", type=int,
+            help="(default: 3)")
+    parser.add_argument("-v", "--verbose", action="store_true")
+
+    args = parser.parse_args()
+
+    ans_unans = [0,0]
+    times = armar_rutas(args.host, args.iteraciones, ans_unans)
+
+    if args.verbose:
+        print_detailed(times, ans_unans)
+    else:
+        print_summary(times, ans_unans)
+
