@@ -73,18 +73,24 @@ def print_summary(times, ans_unans):
             print("{:3}: *                       *         *         *         *         *".format(ttl, ip))
 
 def print_detailed(times, ans_unans):
-    print("TODO")
+    for ttl, tanda in times:
+        if tanda:
+            print(" TTL: {} ----------".format(ttl))
+            for ip, tiempo in tanda:
+                print(" IP: {}\n Tiempo medido: {}".format(ip, tiempo))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Correr un traceroute")
 
-    parser.add_argument("host", default="www.msu.ru", help="(default: www.msu.ru)")
-    parser.add_argument("iteraciones", default=3, type=int, help="(default: 3)")
+    parser.add_argument("host", default="www.msu.ru", nargs="?",
+            help="(default: www.msu.ru)")
+    parser.add_argument("iteraciones", default=3, nargs="?", type=int,
+            help="(default: 3)")
     parser.add_argument("-v", "--verbose", action="store_true")
 
     args = parser.parse_args()
 
-    ans_unans = []
+    ans_unans = [0,0]
     times = armar_rutas(args.host, args.iteraciones, ans_unans)
 
     if args.verbose:
