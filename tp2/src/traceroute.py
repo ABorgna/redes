@@ -17,9 +17,7 @@ TIMEOUT = 1
 MAX_TTL=30
 
 
-def armar_rutas(dst, iteraciones, ans_unans):
-    ans_unans[0], ans_unans[1] = 0, 0 # [answered, unanswered]
-
+def armar_rutas(dst, iteraciones):
     for ttl_actual in range(1, MAX_TTL+1):
         ttl_times = []
         replied = False
@@ -31,31 +29,29 @@ def armar_rutas(dst, iteraciones, ans_unans):
             final_t = (time() - initial_t)*1000
 
             if ans:
-                ans_unans[0] +=  1
                 s, r = ans[0]
 
                 if r.haslayer(sc.ICMP) and r.payload.type in [11, 0]: # time-exceeded o reply
                     ip = r.src
-                    #print(ip)
-
                     ttl_times.append((ip, final_t))
 
                     if r.payload.type == 0: # ya llegó a destino
                         replied = True
-
-            if unans:
-                ans_unans[1] += 1
 
         yield ttl_actual, ttl_times
 
         if replied:
             break
 
-def print_summary(times, ans_unans):
-    print("ttl: ip                    min       avg       max      mdev  relativo ans/unans")
+def print_summary(times):
+    print("ttl: ip                    min       avg       max      mdev  relativo")
+    ans = 0
+    total = 0
     last_t = 0
     for ttl, tanda in times:
+        total += 1
         if tanda:
+            ans += 1
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 ip = mode([ip for ip, t in tanda]).mode[0]
@@ -72,12 +68,22 @@ def print_summary(times, ans_unans):
         else:
             print("{:3}: *                       *         *         *         *         *".format(ttl, ip))
 
-def print_detailed(times, ans_unans):
+    print("-" * 70)
+    print("Saltos que responden:", ans, "({:.2f}% del total)".format(100 * ans / total))
+
+def print_detailed(times):
+    ans = 0
+    total = 0
     for ttl, tanda in times:
+        total += 1
         if tanda:
+            ans += 1
             print(" TTL: {} ----------".format(ttl))
             for ip, tiempo in tanda:
                 print(" IP: {}\n Tiempo medido: {}".format(ip, tiempo))
+
+    print("-" * 19)
+    print("Saltos que responden:", ans, "({:.2f}% del total)".format(100 * ans / total))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Correr un traceroute")
@@ -90,11 +96,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    ans_unans = [0,0]
-    times = armar_rutas(args.host, args.iteraciones, ans_unans)
+    times = armar_rutas(args.host, args.iteraciones)
 
     if args.verbose:
-        print_detailed(times, ans_unans)
+        print_detailed(times)
     else:
-        print_summary(times, ans_unans)
+        print_summary(times)
 

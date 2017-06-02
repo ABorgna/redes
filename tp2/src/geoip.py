@@ -250,7 +250,7 @@ if __name__ == "__main__":
         imgfile = sys.argv[2]
 
         # 1 iteracion para que no tarde años
-        times = traceroute.armar_rutas(target, 1, [0,0])
+        times = traceroute.armar_rutas(target, 1)
         ips = []
         tiempos = []
         for ttl, tanda in times:

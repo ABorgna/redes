@@ -17,7 +17,7 @@ if __name__ == '__main__':
     iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
     target = sys.argv[3] if len(sys.argv) > 3 else ""
 
-    rtts = armar_rutas(dst, iters, [0,0])
+    rtts = armar_rutas(dst, iters)
     ruta = ruta_promedio(rtts)
     print("RUTA : {}".format(ruta))
 

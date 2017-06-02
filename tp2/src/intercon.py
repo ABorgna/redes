@@ -51,7 +51,7 @@ if __name__ == '__main__':
     dst = sys.argv[1] if len(sys.argv) > 1 else "www.msu.ru"
     iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
 
-    rtts = armar_rutas(dst, iters, [0,0])
+    rtts = armar_rutas(dst, iters)
     ruta = ruta_promedio(rtts)
     ruta_outliers = sacar_outliers(ruta)
 
