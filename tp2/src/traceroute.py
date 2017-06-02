@@ -16,6 +16,14 @@ from time import time
 TIMEOUT = 1
 MAX_TTL=30
 
+def ip_maximas_apariciones(tanda, ips_usadas):
+    # esto por el caso muy droga en que se agreguen nodos entre mediciones
+    ips = [ip for ip, rtt in tanda if ip not in ips_usadas]
+    sorted_sin_repetir = sorted(set(ips), key=ips.count, reverse=True)
+    if sorted_sin_repetir:
+        return sorted_sin_repetir[0]
+    else:
+        return ""
 
 def armar_rutas(dst, iteraciones):
     for ttl_actual in range(1, MAX_TTL+1):
@@ -48,14 +56,14 @@ def print_summary(times):
     ans = 0
     total = 0
     last_t = 0
+    ips_vistas = []
     for ttl, tanda in times:
         total += 1
-        if tanda:
+        ip = ip_maximas_apariciones(tanda, ips_vistas)
+        ips_vistas.append(ip)
+        ts = [t for ip_tanda, t in tanda if ip_tanda == ip]
+        if tanda and ip and ts:
             ans += 1
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                ip = mode([ip for ip, t in tanda]).mode[0]
-            ts = [t for ip_tanda, t in tanda if ip_tanda == ip]
             ts.sort()
             if len(ts) > 1:
                 print("{:3}: {:15} {:7.2f}ms {:7.2f}ms {:7.2f}ms {:7.2f}ms {:7.2f}ms".format(
