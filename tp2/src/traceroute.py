@@ -22,14 +22,14 @@ def armar_rutas(dst, iteraciones):
         ttl_times = []
         replied = False
 
+        packet = sc.IP(dst=dst,ttl=ttl_actual)/sc.ICMP()
+
         for i in range(iteraciones):
-            packet = sc.IP(dst=dst,ttl=ttl_actual)/sc.ICMP()
-            initial_t = time()
             ans,unans = sc.sr(packet, timeout=TIMEOUT, verbose=False)
-            final_t = (time() - initial_t)*1000
 
             if ans:
                 s, r = ans[0]
+                final_t = (r.time - s.sent_time)*1000
 
                 if r.haslayer(sc.ICMP) and r.payload.type in [11, 0]: # time-exceeded o reply
                     ip = r.src
