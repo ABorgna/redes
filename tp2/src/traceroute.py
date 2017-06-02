@@ -88,8 +88,8 @@ def print_detailed(times):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Correr un traceroute")
 
-    parser.add_argument("host", default="www.msu.ru", nargs="?",
-            help="(default: www.msu.ru)")
+    parser.add_argument("host", default="mu.ac.in", nargs="?",
+            help="(default: mu.ac.in)")
     parser.add_argument("iteraciones", default=3, nargs="?", type=int,
             help="(default: 3)")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -102,4 +102,3 @@ if __name__ == '__main__':
         print_detailed(times)
     else:
         print_summary(times)
-

@@ -13,7 +13,7 @@ import seaborn as sns
 # parámetros: <destino> <iteraciones> <nombre para los pdfs>
 
 if __name__ == '__main__':
-    dst = sys.argv[1] if len(sys.argv) > 1 else "www.msu.ru"
+    dst = sys.argv[1] if len(sys.argv) > 1 else "mu.ac.in"
     iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
     target = sys.argv[3] if len(sys.argv) > 3 else ""
 
@@ -24,10 +24,11 @@ if __name__ == '__main__':
     # imprimir rtts de ruta
     df = pd.DataFrame(ruta, columns=['IP', 'RTT'])
     ax = sns.factorplot(x='IP', y='RTT', data=df, aspect=1.5)
-    ax.set(xlabel='IPs con más apariciones por salto', ylabel='RTT medio')
+    ax.set(xlabel='IPs con más apariciones por salto', ylabel='RTT medio (ms)')
     ax.set_xticklabels(rotation=90)
     ax.fig.suptitle('RTT medio para cada salto')
 
+    plt.tight_layout()
     plt.show()
     if target:
         ax.savefig("../img/" + target + "-rtts.pdf")
@@ -41,10 +42,11 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(ruta_incremental, columns=['IP', 'RTT incremental'])
     ax = sns.factorplot(x='IP', y='RTT incremental', data=df, aspect=1.5)
-    ax.set(xlabel='IPs con más apariciones por salto', ylabel='Suma de RTTs')
+    ax.set(xlabel='IPs con más apariciones por salto', ylabel='Suma de RTTs (ms)')
     ax.set_xticklabels(rotation=90)
     ax.fig.suptitle('RTT incremental medio tras cada salto')
 
+    plt.tight_layout()
     plt.show()
     if target:
         ax.savefig("../img/" + target + "-incrementales.pdf")

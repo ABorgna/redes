@@ -48,11 +48,16 @@ def sacar_outliers(ruta):
     return outliers
 
 if __name__ == '__main__':
-    dst = sys.argv[1] if len(sys.argv) > 1 else "www.msu.ru"
+    dst = sys.argv[1] if len(sys.argv) > 1 else "mu.ac.in"
     iters = int(sys.argv[2]) if len(sys.argv) > 2 else 30
 
     rtts = armar_rutas(dst, iters)
     ruta = ruta_promedio(rtts)
     ruta_outliers = sacar_outliers(ruta)
 
-    print(ruta_outliers)
+    print("IP con más apariciones            rtt medio")
+    for ip, rtt in ruta:
+        if ip in ruta_outliers:
+            print("{:15}                  {:7.2f}ms    [outlier]".format(ip, rtt))
+        else:
+            print("{:15}                  {:7.2f}ms".format(ip, rtt))
