@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     rtts = list(armar_rutas(dst, iters))
     print_summary(rtts)
-    ruta = ruta_promedio(rtts)
+    ruta = list(ruta_promedio(rtts))
 
     print("RUTA : {}".format(ruta))
 

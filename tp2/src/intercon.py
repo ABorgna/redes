@@ -29,7 +29,7 @@ def ruta_promedio(times):
         chosen_ones = [rtt for ip, rtt in tanda if ip == proxima_ip]
         if tanda and proxima_ip and chosen_ones:
             ruta.append((proxima_ip, mean(chosen_ones)))
-    return ruta
+            yield proxima_ip, mean(chosen_ones)
 
 def tau(n):
     t = stats.t.ppf(1-0.025, n-2)

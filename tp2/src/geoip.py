@@ -7,6 +7,7 @@ import sys
 import urllib
 
 import traceroute
+from intercon import ruta_promedio
 
 STATICMAPS_ENDPOIND = "https://maps.googleapis.com/maps/api/staticmap"
 
@@ -251,13 +252,13 @@ if __name__ == "__main__":
 
         # 1 iteracion para que no tarde años
         times = traceroute.armar_rutas(target, 3)
+        ruta = ruta_promedio(times)
+
         ips = []
         tiempos = []
-        for ttl, tanda in times:
-            if tanda:
-                ip, tiempo = tanda[0]
-                ips.append(ip)
-                tiempos.append(tiempo)
-                print("{:15}: {:7.2f}ms".format(ip,tiempo))
+        for ip, tiempo in ruta:
+            ips.append(ip)
+            tiempos.append(tiempo)
+            print("{:15}: {:7.2f}ms".format(ip,tiempo))
 
         Mapper.generate_route_map(imgfile, ips, tiempos)
