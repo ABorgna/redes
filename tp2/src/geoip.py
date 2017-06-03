@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import argparse
 import base64
 import math
 import requests
@@ -243,22 +244,29 @@ class Mapper:
         return "0x"+"".join(["{:02x}".format(x) for x in rgb])
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Genera una imagen gráfica de un traceroute", file=sys.stderr)
-        print("Uso:", sys.argv[0], "IP", "IMAGE_FILE", file=sys.stderr)
-    else:
-        target = sys.argv[1]
-        imgfile = sys.argv[2]
+    parser = argparse.ArgumentParser(description="Generar el mapita del traceroute")
 
-        # 1 iteracion para que no tarde años
-        times = traceroute.armar_rutas(target, 3)
-        ruta = ruta_promedio(times)
+    parser.add_argument("host", help="direccion de destino")
+    parser.add_argument("-i", "--iteraciones", default=3, type=int,
+            help="(default: 3)")
+    parser.add_argument("-o", "--output", default=None,
+            help="archivo png de salida (default: ../img/<host>-map.png)")
 
-        ips = []
-        tiempos = []
-        for ip, tiempo in ruta:
-            ips.append(ip)
-            tiempos.append(tiempo)
-            print("{:15}: {:7.2f}ms".format(ip,tiempo))
+    args = parser.parse_args()
 
-        Mapper.generate_route_map(imgfile, ips, tiempos)
+    imgfile = args.output if args.output is not None \
+              else "../img/" + args.host + "-map.png"
+
+    # 1 iteracion para que no tarde años
+    times = traceroute.armar_rutas(args.host, args.iteraciones)
+    ruta = ruta_promedio(times)
+
+    ips = []
+    tiempos = []
+    for ip, tiempo in ruta:
+        ips.append(ip)
+        tiempos.append(tiempo)
+        print("{:15}: {:7.2f}ms".format(ip,tiempo))
+
+    Mapper.generate_route_map(imgfile, ips, tiempos)
+
