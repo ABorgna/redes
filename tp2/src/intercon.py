@@ -53,11 +53,19 @@ if __name__ == '__main__':
 
     rtts = armar_rutas(dst, iters)
     ruta = ruta_promedio(rtts)
+
+    ultimo_rtt = 0
+    ruta_final = []
+    for ip, rtt in ruta:
+        ruta_final.append(ip, rtt, rtt - ultimo_rtt)
+        ultimo_rtt = rtt
+
+    ruta_rtts_relativos = [(ip, rel_rtt) for (ip, rtt, rel_rtt) in ruta_final]
     ruta_outliers = sacar_outliers(ruta)
 
-    print("IP con más apariciones            rtt medio")
-    for ip, rtt in ruta:
+    print("IP con más apariciones            rtt medio    rtt relativo")
+    for ip, rtt, relativo in ruta:
         if ip in ruta_outliers:
-            print("{:15}                  {:7.2f}ms    [outlier]".format(ip, rtt))
+            print("{:15}                  {:7.2f}ms   {:7.2f}ms     [outlier]".format(ip, rtt, relativo))
         else:
-            print("{:15}                  {:7.2f}ms".format(ip, rtt))
+            print("{:15}                  {:7.2f}ms   {:7.2f}ms".format(ip, rtt, relativo))

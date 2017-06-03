@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from traceroute import armar_rutas
+from traceroute import armar_rutas, print_summary
 from intercon import ruta_promedio, tau
 from geoip import Mapper
 import sys
@@ -31,14 +31,28 @@ if __name__ == '__main__':
     iters = args.iteraciones
     target = args.output_name
 
-    rtts = armar_rutas(dst, iters)
+    rtts = list(armar_rutas(dst, iters))
+    print_summary(rtts)
     ruta = ruta_promedio(rtts)
+
     print("RUTA : {}".format(ruta))
 
-    # imprimir rtts de ruta
-    df = pd.DataFrame(ruta, columns=['IP', 'RTT'])
+    # imprimir rtts relativos de ruta
+    ultimo_rtt = 0
+    ruta_final = []
+    for ip, rtt in ruta:
+        ruta_final.append((ip, rtt, rtt - ultimo_rtt))
+        ultimo_rtt = rtt
+
+    ruta_rtts_relativos = [(ip, rel_rtt) for (ip, rtt, rel_rtt) in ruta_final]
+
+    print("ruta_rtts_relativos : {}".format(ruta_rtts_relativos))
+
+
+    df = pd.DataFrame(ruta_rtts_relativos, columns=['IP', 'RTT'])
+    sns.set(font_scale=1.5)
     ax = sns.factorplot(x='IP', y='RTT', data=df, aspect=1.5)
-    ax.set(xlabel='IPs con más apariciones por salto', ylabel='RTT medio (ms)')
+    ax.set(xlabel='IPs con más apariciones por salto', ylabel='RTT relativo medio (ms)')
     ax.set_xticklabels(rotation=90)
     ax.fig.suptitle('RTT medio para cada salto')
 
@@ -48,12 +62,7 @@ if __name__ == '__main__':
         ax.savefig("../img/" + target + "-rtts.pdf")
 
     # imprimir incremento de rtts de ruta
-    ruta_incremental = []
-    for i in range(1, len(ruta)+1):
-        suma_previa = sum([rtt for ip, rtt in ruta][:i])
-        ip = ruta[i-1][0]
-        ruta_incremental.append((ip, suma_previa))
-
+    ruta_incremental = ruta
     df = pd.DataFrame(ruta_incremental, columns=['IP', 'RTT incremental'])
     ax = sns.factorplot(x='IP', y='RTT incremental', data=df, aspect=1.5)
     ax.set(xlabel='IPs con más apariciones por salto', ylabel='Suma de RTTs (ms)')
@@ -66,13 +75,13 @@ if __name__ == '__main__':
         ax.savefig("../img/" + target + "-incrementales.pdf")
 
     # imprimir distribución ZRTT
-    rtts = [rtt for ip, rtt in ruta]
+    rtts = [rtt for ip, rtt in ruta_rtts_relativos]
     rtt_media = mean(rtts)
     rtt_sd = std(rtts)
-    n = len(ruta)
+    n = len(rtts)
 
     tuplas_zrtt = []
-    for ip, rtt in ruta:
+    for ip, rtt in ruta_rtts_relativos:
         zrtt = abs(rtt - rtt_media)/rtt_sd
         tuplas_zrtt.append((ip, zrtt))
 
