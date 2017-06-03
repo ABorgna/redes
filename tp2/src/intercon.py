@@ -57,15 +57,15 @@ if __name__ == '__main__':
     ultimo_rtt = 0
     ruta_final = []
     for ip, rtt in ruta:
-        ruta_final.append(ip, rtt, rtt - ultimo_rtt)
+        ruta_final.append((ip, rtt, rtt - ultimo_rtt))
         ultimo_rtt = rtt
 
     ruta_rtts_relativos = [(ip, rel_rtt) for (ip, rtt, rel_rtt) in ruta_final]
-    ruta_outliers = sacar_outliers(ruta)
+    ruta_outliers = sacar_outliers(ruta_rtts_relativos)
 
-    print("IP con más apariciones            rtt medio    rtt relativo")
-    for ip, rtt, relativo in ruta:
+    print("IP con más apariciones         rtt acumulado   rtt relativo")
+    for ip, rtt, relativo in ruta_final:
         if ip in ruta_outliers:
-            print("{:15}                  {:7.2f}ms   {:7.2f}ms     [outlier]".format(ip, rtt, relativo))
+            print("{:15}                  {:7.2f}ms    {:7.2f}ms     [outlier]".format(ip, rtt, relativo))
         else:
-            print("{:15}                  {:7.2f}ms   {:7.2f}ms".format(ip, rtt, relativo))
+            print("{:15}                  {:7.2f}ms    {:7.2f}ms".format(ip, rtt, relativo))
