@@ -11,7 +11,7 @@ Para esta medición se eligió la Universidad de Londres (King's College, the Lo
     \label{fig:lan-incrementales}
 \end{figure}
 
-Se notan dos tramos donde el RTT relativo es muy bajo y constante, que seguramente se corresponden al tramado interno de Buenos Aires y Londres en contraste con las rutas submarinas con mayores promedios.
+Se notan dos tramos donde las diferencias entre RTTs relativos son bajas y constantes, que seguramente se corresponden al entramado interno de Buenos Aires y Londres en contraste con las rutas submarinas con mayores promedios.
 
 \begin{figure}[H]
    \centering
@@ -57,6 +57,6 @@ Asumiendo que es el último en responder (responde por \emph{time-exceeded}, no 
  \label{fig:lan-zrtt}
 \end{figure}
 
-En la figura \ref{fig:lan-zrtt} se ven los outliers de la muestra. Respecto del umbral de la tabla $\tau$, se distinguen los nodos del extremo británnico del transatlántico y el gateway sobrecargado de EEUU, que no es extremo intercontinental pero sí presentó muchísima latencia. \\
+En la figura \ref{fig:lan-zrtt} se ven los outliers de la muestra. Respecto del umbral de la tabla $\tau$, se distinguen los nodos del extremo británico del transatlántico y el gateway sobrecargado de EEUU, que no es extremo intercontinental pero sí presentó muchísima latencia. \\
 
-El otro extremo intercontinental que falta, el de Argentina-Miami aparece con el umbral $Z=1$ junto a los dos anteriores. Por lo tanto el modelado de la distribución es relativamente exitoso para encontrar dichos tramos, aunque el gateway más destacado no sea un tramo intercontinental.
+El otro extremo intercontinental que falta, el de Argentina-Miami aparece con el umbral $Z=1$ (es decir aquellos que están por encima de la desviación estándar normalizada) junto a los dos anteriores, pasando de un falso negativo y un falso positivo, a un único error del tipo falso positivo para el nodo en sobrecarga. Por lo tanto el modelado de la distribución es relativamente exitoso para encontrar dichos tramos, aunque el gateway más destacado no sea un tramo intercontinental.
