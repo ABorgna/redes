@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     #plt.tight_layout()
     if target:
-        ax.fig.set_size_inches(12,8)
+        ax.fig.set_size_inches(24,6)
         ax.savefig("../img/" + target + "-rtts.pdf")
     else:
         plt.show()
@@ -83,7 +83,7 @@ if __name__ == '__main__':
 
     #plt.tight_layout()
     if target:
-        ax.fig.set_size_inches(12,8)
+        ax.fig.set_size_inches(24,6)
         ax.savefig("../img/" + target + "-incrementales.pdf")
     else:
         plt.show()
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     #plt.tight_layout()
     if target:
         fig = ax.get_figure()
-        fig.set_size_inches(12,8)
+        fig.set_size_inches(24,6)
         fig.savefig("../img/" + target + "-zrtt.pdf")
         fig.clear()
     else:
