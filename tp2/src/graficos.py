@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     dst = args.host
     iters = args.iteraciones
-    target = args.output if args.output is not None else args.host
+    target = args.output if args.output is not None else args.host.replace(".","-")
     if args.notarget:
         target = None
 
