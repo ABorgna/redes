@@ -26,10 +26,12 @@ def ip_maximas_apariciones(tanda, ips_usadas):
     else:
         return ""
 
-def armar_rutas(dst, iteraciones):
+def armar_rutas(dst, iteraciones, parallel=True):
     for ttl_actual in range(1, MAX_TTL+1):
+        # Usar ICMP o UDP (que nos permite mandar en paralelo, mas rápido)
+        _send = _send_parallel if parallel else _send_serial
 
-        ttl_times, replied = _send_serial(dst, ttl_actual, iteraciones)
+        ttl_times, replied = _send(dst, ttl_actual, iteraciones)
         yield ttl_actual, ttl_times
 
         if replied:
@@ -72,20 +74,20 @@ def _send_parallel(dst, ttl, count):
         packet = sc.IP(dst=dst,ttl=ttl, id=id)/sc.UDP(dport=33434+id)
         ans,unans = sc.sr(packet, timeout=TIMEOUT, verbose=False)
 
-        ip = None
+        ip_time = None
         replied = None
         if ans:
             s, r = ans[0]
             final_t = (r.time - s.sent_time) * 1000
 
             if r.haslayer(sc.ICMP) and r.payload.type in [11]: # time-exceeded o reply
-                ip = r.src
+                ip_time = r.src, final_t
                 replied = False
             elif r.src == dst:
-                ip = dst
+                ip_time = dst, final_t
                 replied = True # ya llegó a destino
 
-        return (dst, final_t), replied
+        return ip_time, replied
 
     with ThreadPoolExecutor(max_workers=8) as executor:
         for ip_time, rep in executor.map(worker, range(count)):
@@ -144,11 +146,13 @@ if __name__ == '__main__':
             help="(default: www.msu.ru)")
     parser.add_argument("iteraciones", default=3, nargs="?", type=int,
             help="(default: 3)")
+    parser.add_argument("-I", "--ICMP", action="store_true",
+            help="usar versión ICMP (mas lenta)")
     parser.add_argument("-v", "--verbose", action="store_true")
 
     args = parser.parse_args()
 
-    times = armar_rutas(args.host, args.iteraciones)
+    times = armar_rutas(args.host, args.iteraciones, not args.ICMP)
 
     if args.verbose:
         print_detailed(times)
