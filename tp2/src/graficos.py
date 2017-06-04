@@ -71,6 +71,8 @@ if __name__ == '__main__':
     else:
         plt.show()
 
+    ax.fig.clear()
+
     # imprimir incremento de rtts de ruta
     ruta_incremental = ruta
     df = pd.DataFrame(ruta_incremental, columns=['IP', 'RTT incremental'])
@@ -86,6 +88,7 @@ if __name__ == '__main__':
     else:
         plt.show()
 
+    ax.fig.clear()
     # imprimir distribución ZRTT
     rtts = [rtt for ip, rtt in ruta_rtts_relativos]
     rtt_media = mean(rtts)
@@ -110,6 +113,7 @@ if __name__ == '__main__':
         fig = ax.get_figure()
         fig.set_size_inches(12,8)
         fig.savefig("../img/" + target + "-zrtt.pdf")
+        fig.clear()
     else:
         plt.show()
 
@@ -118,5 +122,6 @@ if __name__ == '__main__':
     tiempos = [rtt for ip, rtt in ruta]
 
     print("IPS : {}".format(ips))
+    print("tiempos : {}".format(tiempos))
     if target:
         Mapper.generate_route_map("../img/" + target + "-map.png", ips, tiempos)
