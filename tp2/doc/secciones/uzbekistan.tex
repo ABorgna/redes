@@ -1,6 +1,6 @@
 \subsection{University of Uzbekistan}
 
-Para esta medición se eligió la Universidad Nacional de Uzbekistan (O'zbekiston Milliy Universiteti), ubicada en Tashkent, Uzbekistan. El \emph{host} correspondiente a esta universidad es \emph{nuu.uz}.\par 
+Para esta medición se eligió la Universidad Nacional de Uzbekistan (O'zbekiston Milliy Universiteti), ubicada en Tashkent, Uzbekistan. El \emph{host} correspondiente a esta universidad es \emph{nuu.uz}.\par
 Para esta medici\'on se espera que la ruta se divida en tres tramos siendo el primer tramo el correspodiente a Argentina-EEUU, cruzando el Océano Atlántico hasta desembocar en Europa y finalmente desde Europa hacia el Oeste de Asia alcanzando finalmente Uzbekistan.\par
 Las mediciones fueron realizadas en repetidas ocasiones con el objetivo de no caer en conclusiones precipitadas, utilizando en cada oportunidad 30 iteraciones por TTL. Finalmente los RTTs conseguidos fueron los siguientes: \\
 \begin{figure}[H]
@@ -10,7 +10,7 @@ Las mediciones fueron realizadas en repetidas ocasiones con el objetivo de no ca
     \label{fig:nuu-uz-incrementales}
 \end{figure}
 En el grafico se pueden observar dos incrementos notorios en el RTT, el primer incremento se corresponde con el tramo transatlántico que une EEUU con Europa, dedibo a que este es el tramo más largo.\par
-A continuación se nota otro incremento aunque no tan notorio en el RTT seguido de un incremento más paulatino, casi constante. Este pequeño incremento nos predispone a considerar la existencia de un cuarto tramo y reconsiderar la idea inicial en la que el ultimo tramo es desde un único país Europeo hasta Uzbekistan.\par 
+A continuación se nota otro incremento aunque no tan notorio en el RTT seguido de un incremento más paulatino, casi constante. Este pequeño incremento nos predispone a considerar la existencia de un cuarto tramo y reconsiderar la idea inicial en la que el ultimo tramo es desde un único país Europeo hasta Uzbekistan.\par
 
 
 \begin{figure}[H]
@@ -22,7 +22,7 @@ A continuación se nota otro incremento aunque no tan notorio en el RTT seguido 
 
 Buscando información de la IP '195.22.211.55' pudimos observar que se trata de un host ubicado en Roma, Italia. Debido al incremento en el RTT medio medido para esta IP, creemos que éste es país Européo en el cual desdemboca el tramo transatlántico antes de seguir rumbo hacia su destino. \par
 
-Por otro lado, el incremento presente en '195.239.13.246', se corresponde con un host ubicado en Moscú, Rusia y es el que funciona como enlace entre Europa y Asia dandonos de este modo el cuarto tramo del recorrido.\par 
+Por otro lado, el incremento presente en '195.239.13.246', se corresponde con un host ubicado en Moscú, Rusia y es el que funciona como enlace entre Europa y Asia dandonos de este modo el cuarto tramo del recorrido.\par
 
 \begin{figure}[H]
    \centering
@@ -32,11 +32,11 @@ Por otro lado, el incremento presente en '195.239.13.246', se corresponde con un
 \end{figure}
 
 
-Finalmente, graficando la ruta obtenida podemos constatar que efectivamente el recorrido consta de cuatro tramos, siendo los tramos EEUU-Italia el tramo con más RTT seguido del tramo Italia-Rusia y los responsables de los picos observados en los graficos anteriores. Considerando este gráfico podemos concluir que exite un total de 3 saltos intercontinentales (América-Europa-Asia) a pesar del tramo que une a Italia con Moscú que si bien se trata de un tramo con un RTT considerable no es un tramo intercontin.\par 
+Finalmente, graficando la ruta obtenida podemos constatar que efectivamente el recorrido consta de cuatro tramos, siendo los tramos EEUU-Italia el tramo con más RTT seguido del tramo Italia-Rusia y los responsables de los picos observados en los graficos anteriores. Considerando este gráfico podemos concluir que exite un total de 3 saltos intercontinentales (América-Europa-Asia) a pesar del tramo que une a Italia con Moscú que si bien se trata de un tramo con un RTT considerable no es un tramo intercontinental.\par
 
-En esta medición asi como en las anteriores, se puede ver la misma anomaĺía en la que se utiliza la totalidad de los 30 \emph{Hoops} sin poder determinar con seguridad en qué salto se llega al host destino. Teniendo esto en cuenta y que la cantidad de nodos que responden sin \emph{time-exceeded} es 15, se puede concluir que solo el 50\% de los nodos respondió con \emph{echo-replay}
+En esta medición asi como en las anteriores, se puede ver la misma anomaĺía en la que se utiliza la totalidad de los 30 \emph{Hoops} sin poder determinar con seguridad en qué salto se llega al host destino. Teniendo esto en cuenta y que la cantidad de nodos que responden al \emph{time-exceeded} es 15, se puede concluir que solo el 50\% de los nodos respondió al \emph{echo-request} si contamos esta vez contra los 30 saltos máximo totales (la otra opción sería contar el último salto que responde \emph{time-exceeded} como el destino, aunque no se pueda determinar si realmente lo es, como hicimos antes).
 
- 
+
 \begin{figure}[H]
    \centering
        \includegraphics[width=1\textwidth, height=1\textheight, keepaspectratio]{../img/nuu-uz-zrtt}
@@ -44,4 +44,4 @@ En esta medición asi como en las anteriores, se puede ver la misma anomaĺía e
  \label{fig:nuu-uz-zrtt}
 \end{figure}
 
-En la figura \ref{fig:nuu-uz-zrtt} se ven los outliers de la muestra. Respecto del umbral de la tabla $\tau$. Se distingue un solo outlier correspondiente al nodo ubicado en Italia. Esto resultado es esperado debido a que se trata del extremo Europeo del tramo transatlántico alcanzando de este modo el RTT máximo de la medición sobrepasando incluso a los demás tramos intercontinentales y etiquetando a éstos últimos como falsos negativos. 
+En la figura \ref{fig:nuu-uz-zrtt} se ven los outliers de la muestra. Respecto del umbral de la tabla $\tau$. Se distingue un solo outlier correspondiente al nodo ubicado en Italia. Esto resultado es esperado debido a que se trata del extremo Europeo del tramo transatlántico alcanzando de este modo el RTT máximo de la medición sobrepasando incluso a los demás tramos intercontinentales y etiquetando a éstos últimos como falsos negativos.

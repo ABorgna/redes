@@ -6,22 +6,22 @@ Para esta medición se eligió la Universidad de Londres (King's College, the Lo
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\textwidth, height=1\textheight, keepaspectratio]{../img/lan-incrementales}
+    \includegraphics[width=0.9\textwidth, height=0.22\textheight, keepaspectratio]{../img/lan-incrementales}
     \caption{Comportamiento incremental de RTTs medios medidos.}
     \label{fig:lan-incrementales}
 \end{figure}
 
-Se notan dos tramos donde las diferencias entre RTTs relativos son bajas y constantes, que seguramente se corresponden al entramado interno de Buenos Aires y Londres en contraste con las rutas submarinas con mayores promedios.
-
 \begin{figure}[H]
    \centering
-       \includegraphics[width=1\textwidth, height=1\textheight, keepaspectratio]{../img/lan-rtts}
+       \includegraphics[width=0.9\textwidth, height=0.22\textheight, keepaspectratio]{../img/lan-rtts}
  \caption{RTTs medios medidos para una traceroute a la Universidad de Londres.}
  \label{fig:lan-rtts}
 \end{figure}
 
+En la figura \ref{fig:lan-incrementales} se notan dos tramos donde las diferencias entre RTTs relativos son bajas y constantes, que seguramente se corresponden al entramado interno de Buenos Aires y Londres en contraste con las rutas submarinas con mayores promedios.\\
 
-Se pueden observar un gateway que conforma un pico, adjudicado a las IPs '4.68.72.66' geolocalizada en Estados Unidos con hostname \emph{'lag-9.ear1.Miami1.Level3.net'}. Podemos suponer que se trata de un gateway extremadamente cargado, posiblemente por estar en una red troncal respecto a enlaces submarinos. Este es el único nodo que cambió entre mediciones, dado que en las repeticiones posteriores y anteriores no era común su aparición, que quizás se deba a algún rebalanceo. \\
+
+En la figura \ref{fig:lan-rtts} se puede observar un gateway que conforma un pico, adjudicado a las IP '4.68.72.66' geolocalizada en Estados Unidos con hostname \emph{'lag-9.ear1.Miami1.Level3.net'}. Podemos suponer que se trata de un gateway extremadamente cargado, posiblemente por estar en una red troncal respecto a enlaces submarinos. Este es el único nodo que cambió entre mediciones, dado que en las repeticiones posteriores y anteriores no era común su aparición, que quizás se deba a algún rebalanceo. \\
 
 
 Anteriores a este salto aparecen dos nodos interesantes que son el '208.178.195.209' y '67.17.94.249', ambos adjudicados a Estados Unidos.
